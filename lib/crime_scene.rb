@@ -8,10 +8,10 @@ require "json"
 require "set"
 require "find"
 
-module CrimeScene
+module CrimeScene # rubocop:disable Style/Documentation
   module_function
 
-  def package_analyze(
+  def package_analyze( # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     package_name:,
     package_path:,
     exclude_paths: ["/spec/"],
@@ -21,7 +21,7 @@ module CrimeScene
     aggregated = {
       package_name: package_name,
       constants: {},
-      references: {},
+      references: {}
     }
     ambiguous_constants = {}
 
@@ -51,13 +51,13 @@ module CrimeScene
         if target_path
           constants[const_name] = target_path
         else
-          $stderr.puts "'#{const_name}' fails to resolve path."
+          warn "'#{const_name}' fails to resolve path."
         end
       end
     end
     aggregated[:constants] = constants
     aggregated[:references].transform_values!(&:to_a)
 
-    File.write(package_name + ".json", JSON.dump(aggregated))
+    File.write("#{package_name}.json", JSON.dump(aggregated))
   end
 end

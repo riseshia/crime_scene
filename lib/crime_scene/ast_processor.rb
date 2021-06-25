@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require "parser/current"
 
 module CrimeScene
-  class AstProcessor
+  class AstProcessor # rubocop:disable Style/Documentation
     include AST::Processor::Mixin
 
     def initialize
@@ -16,7 +18,7 @@ module CrimeScene
       @collected_constant_sets.add(full_qualified_name)
 
       @scopes << const_name_in_scope
-      node.children[1..-1].each { |n| process(n) if n.is_a? Parser::AST::Node }
+      node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
       @scopes.pop
       nil
     end
@@ -27,7 +29,7 @@ module CrimeScene
       @collected_constant_sets.add(full_qualified_name)
 
       @scopes << const_name_in_scope
-      node.children[1..-1].each { |n| process(n) if n.is_a? Parser::AST::Node }
+      node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
       @scopes.pop
       nil
     end
@@ -56,7 +58,7 @@ module CrimeScene
       loop do
         child_node, const_name = target_node.children
         const_names << const_name.to_s
-        if child_node&.type == :const
+        if child_node&.type == :const # rubocop:disable Style/GuardClause
           target_node = child_node
         else
           break
@@ -68,7 +70,7 @@ module CrimeScene
     def result
       {
         collected_constants: @collected_constant_sets.to_a,
-        collected_references: @collected_references.transform_values(&:to_a),
+        collected_references: @collected_references.transform_values(&:to_a)
       }
     end
   end

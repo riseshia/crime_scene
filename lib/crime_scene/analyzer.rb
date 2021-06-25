@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require "parser/current"
 
 require_relative "ast_processor"
 
 module CrimeScene
-  module Analyzer
+  module Analyzer # rubocop:disable Style/Documentation
     class UnsupportedFormatError < StandardError; end
 
     Result = Struct.new(:collected_constants, :collected_references, keyword_init: true)
@@ -14,22 +16,20 @@ module CrimeScene
       ast = make_ast(source_code)
 
       processor = AstProcessor.new
-      if !ast.nil?
-        processor.process(ast)
-      end
+      processor.process(ast) unless ast.nil?
       res = processor.result
 
       Result.new(
         collected_constants: res[:collected_constants],
-        collected_references: res[:collected_references],
+        collected_references: res[:collected_references]
       )
     end
 
     # XXXXXXXXXXX
-    def analyze_view(source_code)
+    def analyze_view(_source_code)
       result = Result.new(
         collected_constants: [],
-        collected_references: [],
+        collected_references: []
       )
       scan(/\b(([A-Z][A-Za-z0-9_-]*::)*[A-Z][A-Za-z0-9_-]*)\b/) do |matched|
         result.collected_references << matched.first
