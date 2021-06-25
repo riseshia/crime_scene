@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-module Oni
+module CrimeScene
   class AnalyzerTest < Minitest::Test
     def test_extract_constant_declarations_with_empty_code
       source_code = ""

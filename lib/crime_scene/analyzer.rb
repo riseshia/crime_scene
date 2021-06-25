@@ -2,7 +2,7 @@ require "parser/current"
 
 require_relative "ast_processor"
 
-module Oni
+module CrimeScene
   module Analyzer
     class UnsupportedFormatError < StandardError; end
 

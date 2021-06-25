@@ -1,4 +1,4 @@
-module Oni
+module CrimeScene
   module ConstantPathResolver
     module_function
 

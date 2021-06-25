@@ -1,6 +1,6 @@
 require "parser/current"
 
-module Oni
+module CrimeScene
   class AstProcessor
     include AST::Processor::Mixin
 

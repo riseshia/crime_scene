@@ -2,5 +2,5 @@
 
 require "test_helper"
 
-class OniTest < Minitest::Test
+class CrimeSceneTest < Minitest::Test
 end

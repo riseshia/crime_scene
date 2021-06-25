@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    oni (0.1.0)
+    crime_scene (0.1.0)
       parser
 
 GEM
@@ -35,7 +35,7 @@ PLATFORMS
 
 DEPENDENCIES
   minitest (~> 5.0)
-  oni!
+  crime_scene!
   rake (~> 13.0)
   rubocop (~> 0.80)
 

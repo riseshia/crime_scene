@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative "oni/version"
-require_relative "oni/analyzer"
-require_relative "oni/constant_path_resolver"
+require_relative "crime_scene/version"
+require_relative "crime_scene/analyzer"
+require_relative "crime_scene/constant_path_resolver"
 
 require "json"
 require "set"
 require "find"
 
-module Oni
+module CrimeScene
   module_function
 
   def package_analyze(

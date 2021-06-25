@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in oni.gemspec
+# Specify your gem's dependencies in crime_scene.gemspec
 gemspec
 
 gem "rake", "~> 13.0"
