@@ -23,14 +23,14 @@ module CrimeScene
       #   rewrite: true
       # )
       def execute(
-        target_helper_path:,
+        target_file_path:,
         rewrite: false
       )
-        source_code = File.read(target_helper_path)
+        source_code = File.read(target_file_path)
         new_source_code = process(source_code)
 
         if rewrite
-          File.write(target_helper_path, new_source_code)
+          File.write(target_file_path, new_source_code)
         else
           puts new_source_code
         end
