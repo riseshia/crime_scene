@@ -28,6 +28,8 @@ GEM
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (1.7.0)
       parser (>= 3.0.1.1)
+    rubocop-minitest (0.13.0)
+      rubocop (>= 0.90, < 2.0)
     ruby-progressbar (1.11.0)
     unicode-display_width (1.7.0)
     zeitwerk (2.4.2)
@@ -40,6 +42,7 @@ DEPENDENCIES
   minitest (~> 5.0)
   rake (~> 13.0)
   rubocop (~> 0.80)
+  rubocop-minitest (~> 0.13)
 
 BUNDLED WITH
    2.2.3
