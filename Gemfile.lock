@@ -3,6 +3,7 @@ PATH
   specs:
     crime_scene (0.1.0)
       parser
+      zeitwerk
 
 GEM
   remote: https://rubygems.org/
@@ -29,13 +30,14 @@ GEM
       parser (>= 3.0.1.1)
     ruby-progressbar (1.11.0)
     unicode-display_width (1.7.0)
+    zeitwerk (2.4.2)
 
 PLATFORMS
   x86_64-darwin-20
 
 DEPENDENCIES
-  minitest (~> 5.0)
   crime_scene!
+  minitest (~> 5.0)
   rake (~> 13.0)
   rubocop (~> 0.80)
 

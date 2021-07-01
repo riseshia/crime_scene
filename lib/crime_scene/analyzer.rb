@@ -2,8 +2,6 @@
 
 require "parser/current"
 
-require_relative "ast_processor"
-
 module CrimeScene
   module Analyzer # rubocop:disable Style/Documentation
     class UnsupportedFormatError < StandardError; end

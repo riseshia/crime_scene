@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative "crime_scene/version"
-require_relative "crime_scene/analyzer"
-require_relative "crime_scene/constant_path_resolver"
+require "zeitwerk"
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 require "json"
 require "set"
