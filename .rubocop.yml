@@ -3,6 +3,8 @@ AllCops:
   NewCops: enable
   SuggestExtensions: false
 
+Style/AccessModifierDeclarations:
+  Enabled: false
 
 Style/StringLiterals:
   Enabled: true
