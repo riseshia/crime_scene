@@ -11,7 +11,7 @@ require "find"
 module CrimeScene # rubocop:disable Style/Documentation
   module_function
 
-  def package_analyze( # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+  def package_analyze( # rubocop:disable Metrics/AbcSize, Metrics/PerceivedComplexity
     package_name:,
     package_path:,
     exclude_paths: ["/spec/"],

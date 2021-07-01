@@ -66,10 +66,21 @@ module CrimeScene
           pop_scope
         end
 
+        TARGET_METHOD = %i[public protected private].freeze
         def on_send(node)
           receiver, method_name, target = node.children
+          return unless TARGET_METHOD.include?(method_name)
           return unless receiver.nil?
-          return unless target.nil?
+
+          if target&.type == :sym
+            # symbol visibility used.
+            remove_line(node)
+            return
+          end
+          if target&.type == :def
+            # Inline visibility used.
+            return
+          end
 
           case method_name
           when :private
@@ -84,15 +95,42 @@ module CrimeScene
         end
 
         def on_def(node)
-          return if current_visibility == :public
+          method_visibility = try_retrieve_method_visibility_from_next_line(node) || current_visibility
+          return if method_visibility == :public
 
-          insert_before(node.location.expression.begin, "#{current_visibility} ")
+          insert_before(node.location.expression.begin, "#{method_visibility} ")
+        end
+
+        private def try_retrieve_method_visibility_from_next_line(node)
+          end_lineno = node.location.end.line
+          next_line = fetch_next_line_from_buffer(end_lineno).strip
+
+          if next_line.start_with?("private :") then :private
+          elsif next_line.start_with?("protected :") then :protected
+          end
+        end
+
+        private def fetch_next_line_from_buffer(lineno)
+          idx = lineno
+
+          loop do
+            idx += 1
+            idx_line = source_buffer.source_line(idx)
+            return idx_line if idx_line.strip.size.positive?
+          rescue Parser::Source::Buffer::IndexError => e
+            raise e
+          end
+        end
+
+        private def source_buffer
+          @source_rewriter.source_buffer
         end
 
         private def remove_line(node)
-          range = node.location.expression
-          diff = range.source_line.size - range.source.size
-          remove(range.adjust(begin_pos: -(diff + 1), end_pos: 0))
+          lineno = node.location.line
+          begin_pos = source_buffer.line_range(lineno - 1).end_pos
+          range = source_buffer.line_range(lineno).with(begin_pos: begin_pos)
+          remove(range)
         end
 
         private def current_visibility

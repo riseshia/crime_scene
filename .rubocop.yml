@@ -1,7 +1,6 @@
 AllCops:
   TargetRubyVersion: 2.7
   NewCops: enable
-  SuggestExtensions: false
 
 Style/AccessModifierDeclarations:
   Enabled: false
@@ -16,6 +15,9 @@ Style/StringLiteralsInInterpolation:
 
 Layout/LineLength:
   Max: 120
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
 
 Metrics/ClassLength:
   Enabled: false
