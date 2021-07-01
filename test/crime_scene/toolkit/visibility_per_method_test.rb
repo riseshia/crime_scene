@@ -90,7 +90,7 @@ module CrimeScene
         assert_equal expected_code, actual_code
       end
 
-      def test_nested_const_method_visibility
+      def test_nested_module_method_visibility
         source_code = <<~TEST_CODE
           module User
             private
@@ -126,6 +126,41 @@ module CrimeScene
               protected def protected_name(user)
                 user.name
               end
+            end
+          end
+        TEST_CODE
+        actual_code = VisibilityPerMethod.process(source_code)
+        assert_equal expected_code, actual_code
+      end
+
+      def test_nested_self_class_method_visibility
+        source_code = <<~TEST_CODE
+          class Note
+            class << self
+              def public_class_method
+              end
+
+              private
+              def private_class_method
+              end
+            end
+
+            def pub_ins_method
+            end
+          end
+        TEST_CODE
+
+        expected_code = <<~TEST_CODE
+          class Note
+            class << self
+              def public_class_method
+              end
+
+              private def private_class_method
+              end
+            end
+
+            def pub_ins_method
             end
           end
         TEST_CODE

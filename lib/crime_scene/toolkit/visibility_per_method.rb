@@ -60,6 +60,12 @@ module CrimeScene
           pop_scope
         end
 
+        def on_sclass(node)
+          push_scope
+          node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
+          pop_scope
+        end
+
         def on_module(node)
           push_scope
           node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
