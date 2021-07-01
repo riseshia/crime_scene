@@ -49,9 +49,21 @@ module CrimeScene
 
       class AddVisibilityToMethod < Parser::TreeRewriter # rubocop:disable Style/Documentation
         def initialize
-          super
           @scopes = []
-          @visibility = :public
+          @visibilites = []
+          super
+        end
+
+        def on_class(node)
+          push_scope
+          node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
+          pop_scope
+        end
+
+        def on_module(node)
+          push_scope
+          node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
+          pop_scope
         end
 
         def on_send(node)
@@ -61,26 +73,39 @@ module CrimeScene
 
           case method_name
           when :private
-            @visibility = :private
+            update_current_visibility(:private)
             remove_line(node)
           when :protected
-            @visibility = :protected
+            update_current_visibility(:protected)
             remove_line(node)
           when :public
-            @visibility = :public
+            update_current_visibility(:public)
           end
         end
 
         def on_def(node)
-          return if @visibility == :public
+          return if current_visibility == :public
 
-          insert_before(node.location.expression.begin, "#{@visibility} ")
+          insert_before(node.location.expression.begin, "#{current_visibility} ")
         end
 
         private def remove_line(node)
           range = node.location.expression
           diff = range.source_line.size - range.source.size
           remove(range.adjust(begin_pos: -(diff + 1), end_pos: 0))
+        end
+
+        private def current_visibility
+          @visibilites.last
+        end
+        private def update_current_visibility(value)
+          @visibilites[-1] = value
+        end
+        private def push_scope
+          @visibilites << :public
+        end
+        private def pop_scope
+          @visibilites.pop
         end
       end
     end

@@ -60,29 +60,42 @@ module CrimeScene
         assert_equal expected_code, actual_code
       end
 
-      def test_replace_symbol
+      def test_nested_const_method_visibility
         source_code = <<~TEST_CODE
-          module UserHelper
-            def private_name(user)
-              user.name
-            end
-            private :private_name
+          module User
+            private
+            module UserHelper
+              def public_name(user)
+                user.name
+              end
 
-            def protected_name(user)
-              user.name
+              private
+              def private_name(user)
+                user.name
+              end
+
+              protected
+              def protected_name(user)
+                user.name
+              end
             end
-            protected :protected_name
           end
         TEST_CODE
 
         expected_code = <<~TEST_CODE
-          module UserHelper
-            private def private_name(user)
-              user.name
-            end
+          module User
+            module UserHelper
+              def public_name(user)
+                user.name
+              end
 
-            protected def protected_name(user)
-              user.name
+              private def private_name(user)
+                user.name
+              end
+
+              protected def protected_name(user)
+                user.name
+              end
             end
           end
         TEST_CODE
