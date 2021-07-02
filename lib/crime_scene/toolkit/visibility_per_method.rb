@@ -11,8 +11,7 @@ module CrimeScene
       # Make all method definition has visibility explicit
       # except public method from file.
       #
-      # @option helper_paths [Array<String>]
-      # @option target_helper_path [String]
+      # @option target_file_path [String]
       # @option rewrite [TrueClass | FalseClass]
       #
       # @return [nil]
@@ -70,6 +69,27 @@ module CrimeScene
           push_scope
           node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
           pop_scope
+        end
+
+        def on_block(node)
+          struct_def = struct_def?(node)
+          push_scope if struct_def
+          node.children.each { |n| process(n) if n.is_a? Parser::AST::Node }
+          pop_scope if struct_def
+        end
+
+        private def struct_def?(node)
+          return false unless node.type == :block
+          struct_new, *_misc = node.children
+          return false unless struct_new&.type == :send
+          receiver, method_name = struct_new.children
+          if method_name == :new &&
+              receiver&.type == :const &&
+              receiver.children == [nil, :Struct]
+            true
+          else
+            false
+          end
         end
 
         TARGET_METHOD = %i[public protected private].freeze

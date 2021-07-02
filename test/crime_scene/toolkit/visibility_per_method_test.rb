@@ -189,6 +189,49 @@ module CrimeScene
         actual_code = VisibilityPerMethod.process(source_code)
         assert_equal expected_code, actual_code
       end
+
+      def test_private_in_struct
+        source_code = <<~TEST_CODE
+          class User
+            def name
+              name + "sama"
+            end
+
+            UserStatus = Struct.new(:user_id, :status) do
+              def pub_method_in_stt
+              end
+              private
+              def pri_method_in_stt
+              end
+            end
+
+            def free?
+              true
+            end
+          end
+        TEST_CODE
+
+        expected_code = <<~TEST_CODE
+          class User
+            def name
+              name + "sama"
+            end
+
+            UserStatus = Struct.new(:user_id, :status) do
+              def pub_method_in_stt
+              end
+              private def pri_method_in_stt
+              end
+            end
+
+            def free?
+              true
+            end
+          end
+        TEST_CODE
+        actual_code = VisibilityPerMethod.process(source_code)
+        assert_equal expected_code, actual_code
+      end
     end
   end
 end
