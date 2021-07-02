@@ -167,6 +167,28 @@ module CrimeScene
         actual_code = VisibilityPerMethod.process(source_code)
         assert_equal expected_code, actual_code
       end
+
+      def test_public_in_private_scope
+        source_code = <<~TEST_CODE
+          module UserHelper
+            private
+            def public_name(user)
+              user.name
+            end
+            public :private_name
+          end
+        TEST_CODE
+
+        expected_code = <<~TEST_CODE
+          module UserHelper
+            def public_name(user)
+              user.name
+            end
+          end
+        TEST_CODE
+        actual_code = VisibilityPerMethod.process(source_code)
+        assert_equal expected_code, actual_code
+      end
     end
   end
 end

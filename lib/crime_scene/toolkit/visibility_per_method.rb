@@ -113,6 +113,7 @@ module CrimeScene
 
           if next_line.start_with?("private :") then :private
           elsif next_line.start_with?("protected :") then :protected
+          elsif next_line.start_with?("public :") then :public
           end
         end
 
