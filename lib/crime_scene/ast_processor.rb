@@ -13,9 +13,15 @@ module CrimeScene
     end
 
     def on_class(node)
-      const_name_in_scope = build_const(node.children.first)
+      const_name_in_scope = build_const(node.children[0])
+
       full_qualified_name = qualify_const_name(const_name_in_scope)
       @collected_constant_sets.add(full_qualified_name)
+
+      unless node.children[1].nil?
+        inherit_const_name = build_const(node.children[1])
+        @collected_constant_sets.add(inherit_const_name)
+      end
 
       @scopes << const_name_in_scope
       node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }

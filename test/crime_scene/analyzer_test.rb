@@ -75,7 +75,7 @@ module CrimeScene
           end
         end
       TEST_CODE
-      expected_constants = %w[User]
+      expected_constants = %w[User BaseClass]
       actual_constants = Analyzer.analyze_ruby(source_code).collected_constants
       assert_equal expected_constants, actual_constants
     end
