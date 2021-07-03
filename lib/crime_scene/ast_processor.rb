@@ -12,7 +12,7 @@ module CrimeScene
       @scopes = []
     end
 
-    def on_class(node)
+    def on_class(node) # rubocop:disable Metrics/AbcSize
       const_name_in_scope = build_const(node.children[0])
 
       full_qualified_name = qualify_const_name(const_name_in_scope)
