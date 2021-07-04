@@ -1,0 +1,25 @@
+- name: TargetApp
+  include_paths:
+    - app/controllers/application_controller.rb
+    - app/helpers/application_helper.rb
+    - app/views/layouts/application.html.erb
+- name: Top
+  include_paths:
+    - app/controllers/top_controller.rb
+    - app/views/top/
+    - app/helpers/top_helper.rb
+- name: Users
+  include_paths:
+    - app/controllers/users_controller.rb
+    - app/views/users/
+    - app/helpers/users_helper.rb
+- name: Post
+  include_paths:
+    - app/controllers/posts_controller.rb
+    - app/views/posts/
+    - app/helpers/posts_helper.rb
+- name: Comment
+  include_paths:
+    - app/controllers/comments_controller.rb
+    - app/views/comments/
+    - app/helpers/comments_helper.rb
