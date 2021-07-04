@@ -8,7 +8,7 @@ module CrimeScene
     class << self
       # @return [Hash<String, Array<String>>] { package_name => [package_name] }
       def call(packages_config_path)
-        packages_config = YAML.safe_load(File.read(packages_config_path), symbolize_names: true)
+        packages_config = YAML.safe_load(File.read(packages_config_path), permitted_classes: [Symbol], symbolize_names: true)
         path_to_config_file = File.dirname(packages_config_path)
 
         packages = nil
@@ -81,10 +81,36 @@ module CrimeScene
 
       def aggregation_filepaths_from_package(packages)
         packages.each_with_object(Set.new) do |package, all_files|
-          raise "Some files of #{package.name} are scanned more then once." if all_files.intersect?(package.files)
+          if all_files.intersect?(package.files)
+            handle_intersect(all_files & package.files, packages)
+          end
 
           all_files.merge(package.files)
         end
+      end
+
+      def handle_intersect(conflicted_files, packages)
+        conflict_packages = {}
+        conflicted_files.each do |file|
+          conflict_packages[file] = []
+
+          packages.each do |package|
+            if package.files.member?(file)
+              conflict_packages[file] << package
+            end
+          end
+        end
+
+        warn "Some files are scanned more than one package."
+        conflict_packages.each do |file, packages|
+          warn "Conflicted file: #{file}"
+          warn "which founded from:"
+          packages.each do |package|
+            warn "- #{package.name}:"
+            warn "  -#{package.include_paths.to_a}"
+          end
+        end
+        exit 1
       end
 
       # Expected config file scheme

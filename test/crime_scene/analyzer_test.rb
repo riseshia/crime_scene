@@ -141,12 +141,16 @@ module CrimeScene
       source_code = <<~TEST_CODE
         <h1>Users</h1>
         <%# This is just a comment. %>
-        <% User.all.each do |user| %>
+        <% User.all.each do |user| -%>
         - <%= user.name %>
         - <%= link_to 'Show', user %>
         <% end %>
         <% post = Post.last %>
         <%= link_to 'Newest post', post %>
+        <%= "plain" %> <%= "text" %>
+        <%= form_for :diary,
+            :remote => true do |f| %>
+        <% end %>
       TEST_CODE
 
       expected_references = { path => %w[User Post] }

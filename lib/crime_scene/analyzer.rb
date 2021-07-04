@@ -36,25 +36,45 @@ module CrimeScene
 
       used_by_haml_compiler = ["Hash", "Array", "Haml::Helpers"]
 
-      # collected_references can't be empty, since Haml compiler
-      actually_used = result.collected_references.values.first - used_by_haml_compiler
+      collected_references =
+        if result.collected_references.empty?
+          {}
+        else
+          { identifier => result.collected_references.values.first - used_by_haml_compiler }
+        end
+
       Result.new(
         collected_constants: [],
-        collected_references: { identifier => actually_used }
+        collected_references: collected_references
       )
     end
 
     # XXX: Rails patch erb syntax, we can't make valid ast without that...
-    ERB_DELIMETER = /(=?<%[#=-]?)(.+)(=?-?%>)/.freeze
+    ERB_DELIMETER = /(=?<%[#=-]?)(.+?)(=?-?%>)/m.freeze
     def analyze_erb(path, source_code)
       # XXX: Super hook!!
       identifier = path.split("/views/").last
 
       ruby_lines = []
-      source_code.scan(ERB_DELIMETER) do |matched|
-        next if matched.first == "<%#" # comment
+      tmp = ""
+      source_code.each_line do |line|
+        tmp += line
+        res = tmp.scan(ERB_DELIMETER)
 
-        ruby_lines << matched[1]
+        next if res.empty? # keep string in tmp
+
+        res.each do |matched|
+          next if matched.first == "<%#" # comment
+
+          ruby_code = matched[1].end_with?("-") ? matched[1][..-2] : matched[1]
+          ruby_lines << ruby_code
+        end
+        tmp = "" # reset
+      end
+      source_code.gsub("\n", "").scan(ERB_DELIMETER) do |matched|
+
+        # last '-' trimming
+
       end
 
       result = analyze_ruby(identifier, ruby_lines.join("\n"))
