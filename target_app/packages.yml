@@ -3,6 +3,7 @@
     - app/controllers/application_controller.rb
     - app/helpers/application_helper.rb
     - app/views/layouts/application.html.erb
+    - app/models/application_record.rb
 - name: Top
   include_paths:
     - app/controllers/top_controller.rb

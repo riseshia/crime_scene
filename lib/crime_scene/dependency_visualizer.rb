@@ -27,7 +27,6 @@ module CrimeScene
         package_to_external_consts = extract_external_const(packages)
 
         convert_const_to_package(packages, package_to_external_consts)
-        {}
       end
 
       def convert_const_to_package(packages, package_to_external_consts)
