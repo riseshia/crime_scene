@@ -4,6 +4,7 @@ module CrimeScene
   module ConstantPathResolver # rubocop:disable Style/Documentation
     module_function
 
+    # snake_case to PascalCase
     # @return [String] const_path
     def resolve(const_name)
       const_name.gsub(/::/, "/") # rubocop:disable Style/StringConcatenation

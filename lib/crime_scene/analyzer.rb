@@ -10,7 +10,7 @@ module CrimeScene
 
     module_function
 
-    def analyze_ruby(source_code)
+    def analyze_ruby(_path, source_code)
       ast = make_ast(source_code)
 
       processor = AstProcessor.new
@@ -24,26 +24,28 @@ module CrimeScene
     end
 
     # XXXXXXXXXXX
-    def analyze_view(_source_code)
+    def analyze_view(path, source_code)
+      # XXX: Super hook!!
+      identifier = path.split("/views/").last
+
       result = Result.new(
         collected_constants: [],
-        collected_references: []
+        collected_references: {}
       )
-      scan(/\b(([A-Z][A-Za-z0-9_-]*::)*[A-Z][A-Za-z0-9_-]*)\b/) do |matched|
-        result.collected_references << matched.first
+      source_code.scan(/\b(([A-Z][A-Za-z0-9_-]*::)*[A-Z][A-Za-z0-9_-]*)\b/) do |matched|
+        result.collected_references[identifier] ||= []
+        result.collected_references[identifier] << matched.first
       end
 
       result
     end
 
-    def analyze_file(path)
-      source_code = File.read(path)
-
+    def analyze(path, source_code)
       case File.extname(path)
       when ".rb"
-        analyze_ruby(source_code)
+        analyze_ruby(path, source_code)
       when ".haml", ".erb"
-        analyze_view(source_code)
+        analyze_view(path, source_code)
       else
         raise UnsupportedFormatError, "Unsupported format #{File.extname(path)}(#{path})!"
       end
