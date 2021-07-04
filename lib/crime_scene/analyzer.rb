@@ -49,12 +49,8 @@ module CrimeScene
       )
     end
 
-    # XXX: Rails patch erb syntax, we can't make valid ast without that...
     ERB_DELIMETER = /(=?<%[#=-]?)(.+?)(=?-?%>)/m.freeze
-    def analyze_erb(path, source_code)
-      # XXX: Super hook!!
-      identifier = path.split("/views/").last
-
+    def extract_ruby_code(source_code)
       ruby_lines = []
       tmp = ""
       source_code.each_line do |line|
@@ -66,18 +62,22 @@ module CrimeScene
         res.each do |matched|
           next if matched.first == "<%#" # comment
 
+          # last '-' trimming
           ruby_code = matched[1].end_with?("-") ? matched[1][..-2] : matched[1]
           ruby_lines << ruby_code
         end
         tmp = "" # reset
       end
-      source_code.gsub("\n", "").scan(ERB_DELIMETER) do |matched|
 
-        # last '-' trimming
+      ruby_lines.join("\n")
+    end
 
-      end
+    # XXX: Rails patch erb syntax, we can't make valid ast without that...
+    def analyze_erb(path, source_code)
+      # XXX: Super hook!!
+      identifier = path.split("/views/").last
 
-      result = analyze_ruby(identifier, ruby_lines.join("\n"))
+      result = analyze_ruby(identifier, extract_ruby_code(source_code))
 
       collected_references =
         if result.collected_references.empty?

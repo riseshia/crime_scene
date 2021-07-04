@@ -4,11 +4,15 @@ require "yaml"
 
 module CrimeScene
   # Entrypoint of Dependency calculation.
-  module DependencyVisualizer
+  module DependencyVisualizer # rubocop:disable Metrics/ModuleLength
     class << self
       # @return [Hash<String, Array<String>>] { package_name => [package_name] }
       def call(packages_config_path)
-        packages_config = YAML.safe_load(File.read(packages_config_path), permitted_classes: [Symbol], symbolize_names: true)
+        packages_config = YAML.safe_load(
+          File.read(packages_config_path),
+          permitted_classes: [Symbol],
+          symbolize_names: true
+        )
         path_to_config_file = File.dirname(packages_config_path)
 
         packages = nil
@@ -19,10 +23,9 @@ module CrimeScene
           meta_per_file = process_asts(all_files)
         end
 
-        append_reference_to_package(packages, meta_per_file)
-
         const_to_location = find_out_const_location(meta_per_file)
         append_const_location_to_package(packages, const_to_location)
+        append_reference_to_package(packages, meta_per_file)
 
         package_to_external_consts = extract_external_const(packages)
 
@@ -81,31 +84,27 @@ module CrimeScene
 
       def aggregation_filepaths_from_package(packages)
         packages.each_with_object(Set.new) do |package, all_files|
-          if all_files.intersect?(package.files)
-            handle_intersect(all_files & package.files, packages)
-          end
+          handle_intersect(all_files & package.files, packages) if all_files.intersect?(package.files)
 
           all_files.merge(package.files)
         end
       end
 
-      def handle_intersect(conflicted_files, packages)
+      def handle_intersect(conflicted_files, packages) # rubocop:disable Metrics/AbcSize
         conflict_packages = {}
         conflicted_files.each do |file|
           conflict_packages[file] = []
 
           packages.each do |package|
-            if package.files.member?(file)
-              conflict_packages[file] << package
-            end
+            conflict_packages[file] << package if package.files.member?(file)
           end
         end
 
         warn "Some files are scanned more than one package."
-        conflict_packages.each do |file, packages|
+        conflict_packages.each do |file, cpkgs|
           warn "Conflicted file: #{file}"
           warn "which founded from:"
-          packages.each do |package|
+          cpkgs.each do |package|
             warn "- #{package.name}:"
             warn "  -#{package.include_paths.to_a}"
           end
@@ -126,12 +125,22 @@ module CrimeScene
         end
       end
 
-      def append_reference_to_package(packages, meta_per_file)
+      def append_reference_to_package(packages, meta_per_file) # rubocop:disable Metrics/AbcSize
+        all_collected = meta_per_file.flat_map { |_k, v| v.collected_constants.to_a }
+        all_consts = ReferenceConstantResolver.generate_missing_modules(all_collected)
+
         packages.each do |package|
           package.files.each do |file|
             next unless meta_per_file[file]
 
-            refs = meta_per_file[file].collected_references.flat_map { |_k, v| v }
+            refs = Set.new
+            meta_per_file[file].collected_references.each do |scope_name, const_names|
+              const_names.each do |const_name|
+                qualified = ReferenceConstantResolver.call(scope_name, const_name, all_consts)
+                refs.add(qualified)
+              end
+            end
+
             package.add_references(refs)
           end
         end

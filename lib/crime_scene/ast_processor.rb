@@ -24,11 +24,11 @@ module CrimeScene
 
         @collected_references[current_scope] ||= Set.new
         @collected_references[current_scope].add(inherit_const_name)
-      else
-        @scopes << const_name_in_scope
-        node.children[1..].each { |n| process(n) if n.is_a? Parser::AST::Node }
-        @scopes.pop
       end
+
+      @scopes << const_name_in_scope
+      node.children[2..].each { |n| process(n) if n.is_a? Parser::AST::Node }
+      @scopes.pop
 
       nil
     end

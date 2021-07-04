@@ -145,7 +145,7 @@ module CrimeScene
         end
       TEST_CODE
       expected_references = {
-        "" => ["BaseClass"],
+        "" => ["BaseClass"]
       }
       actual_references = Analyzer.analyze_ruby(path, source_code).collected_references
       assert_equal expected_references, actual_references
