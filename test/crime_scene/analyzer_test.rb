@@ -80,7 +80,7 @@ module CrimeScene
           end
         end
       TEST_CODE
-      expected_constants = %w[User BaseClass]
+      expected_constants = %w[User]
       actual_constants = Analyzer.analyze_ruby(path, source_code).collected_constants
       assert_equal expected_constants, actual_constants
     end
@@ -131,6 +131,21 @@ module CrimeScene
       expected_references = {
         "User" => ["Page", "Comment", "MyApp::CommentFilter::Accepted"],
         "UserHelper" => ["User"]
+      }
+      actual_references = Analyzer.analyze_ruby(path, source_code).collected_references
+      assert_equal expected_references, actual_references
+    end
+
+    def test_extract_reference_with_inherited_class
+      path = "user.rb"
+      source_code = <<~TEST_CODE
+        class User < BaseClass
+          def initialize
+          end
+        end
+      TEST_CODE
+      expected_references = {
+        "" => ["BaseClass"],
       }
       actual_references = Analyzer.analyze_ruby(path, source_code).collected_references
       assert_equal expected_references, actual_references
