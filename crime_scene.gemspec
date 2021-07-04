@@ -30,6 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Uncomment to register a new dependency of your gem
+  spec.add_dependency "haml"
   spec.add_dependency "parser"
   spec.add_dependency "zeitwerk"
 

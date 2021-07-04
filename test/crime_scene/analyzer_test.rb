@@ -135,5 +135,44 @@ module CrimeScene
       actual_references = Analyzer.analyze_ruby(path, source_code).collected_references
       assert_equal expected_references, actual_references
     end
+
+    def test_analyze_erb
+      path = "users/index.html.erb"
+      source_code = <<~TEST_CODE
+        <h1>Users</h1>
+        <%# This is just a comment. %>
+        <% User.all.each do |user| %>
+        - <%= user.name %>
+        - <%= link_to 'Show', user %>
+        <% end %>
+        <% post = Post.last %>
+        <%= link_to 'Newest post', post %>
+      TEST_CODE
+
+      expected_references = { path => %w[User Post] }
+      actual_references = Analyzer.analyze_erb(path, source_code).collected_references
+      assert_equal expected_references, actual_references
+    end
+
+    def test_analyze_haml
+      path = "users/index.html.haml"
+      source_code = <<~TEST_CODE
+        %h1 Users
+        -# This is just a comment.
+        - @users.each do |user|
+          = user.name
+          = link_to 'Show', user
+        - post = Post.last
+        = link_to 'Newest post', post
+
+        - (1..2).each do |i|
+          -# This is NOT A COMMENT.
+          %p{ :id => "Comment_\#{i}"} \#{User.find(i)}
+      TEST_CODE
+
+      expected_references = { path => %w[Post User] }
+      actual_references = Analyzer.analyze_haml(path, source_code).collected_references
+      assert_equal expected_references, actual_references
+    end
   end
 end
