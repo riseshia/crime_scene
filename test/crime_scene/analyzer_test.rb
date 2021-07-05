@@ -193,5 +193,21 @@ module CrimeScene
       actual_references = Analyzer.analyze_haml(path, source_code).collected_references
       assert_equal expected_references, actual_references
     end
+
+    def test_rails_dsl
+      path = "user.rb"
+      source_code = <<~TEST_CODE
+        class User
+          has_many :posts
+          has_many :own_recipes, class_name: "Recipe"
+          has_many :subscribers, through: :subscriptions
+          belongs_to :org, class_name: "Organization"
+          belongs_to :group
+        end
+      TEST_CODE
+      expected_references = { "" => %w[Post Recipe Subscription Subscriber Organization Group] }
+      actual_references = Analyzer.analyze_ruby(path, source_code).collected_references
+      assert_equal expected_references, actual_references
+    end
   end
 end

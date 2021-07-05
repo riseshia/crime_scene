@@ -9,7 +9,7 @@
     - app/controllers/top_controller.rb
     - app/views/top/
     - app/helpers/top_helper.rb
-- name: Users
+- name: User
   include_paths:
     - app/controllers/users_controller.rb
     - app/views/users/

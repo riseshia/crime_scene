@@ -9,9 +9,9 @@ module CrimeScene
       expected_map = {
         "TargetApp" => ["UnknownPackage"],
         "Top" => %w[Post TargetApp],
-        "Users" => %w[Post TargetApp],
-        "Post" => ["TargetApp"],
-        "Comment" => ["TargetApp"]
+        "User" => %w[Comment Post TargetApp],
+        "Post" => %w[Comment TargetApp User],
+        "Comment" => %w[Post TargetApp User]
       }
 
       assert_equal(expected_map, actual_map)
