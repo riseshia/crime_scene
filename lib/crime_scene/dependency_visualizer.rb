@@ -46,7 +46,7 @@ module CrimeScene
           const_names.map do |const_name|
             uniq_set.add(const_to_package_name.fetch(const_name, "UnknownPackage"))
           end
-          package_to_package[package_name] = uniq_set.to_a
+          package_to_package[package_name] = uniq_set.to_a.sort
         end
         package_to_package
       end

@@ -8,8 +8,8 @@ module CrimeScene
       actual_map = DependencyVisualizer.call("target_app/packages.yml")
       expected_map = {
         "TargetApp" => ["UnknownPackage"],
-        "Top" => %w[TargetApp Post],
-        "Users" => %w[TargetApp Post],
+        "Top" => %w[Post TargetApp],
+        "Users" => %w[Post TargetApp],
         "Post" => ["TargetApp"],
         "Comment" => ["TargetApp"]
       }
