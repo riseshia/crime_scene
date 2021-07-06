@@ -1,10 +1,15 @@
 # User
 
-## Depend packages
+## Depend to
 
 - [Comment](Comment.md)
 - [Post](Post.md)
 - [TargetApp](TargetApp.md)
+
+## Dependented by
+
+- [Comment](Comment.md)
+- [Post](Post.md)
 
 ## Included files
 

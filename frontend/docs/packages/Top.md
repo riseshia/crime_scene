@@ -1,9 +1,13 @@
 # Top
 
-## Depend packages
+## Depend to
 
 - [Post](Post.md)
 - [TargetApp](TargetApp.md)
+
+## Dependented by
+
+This package isn't depended by any package.
 
 ## Included files
 
