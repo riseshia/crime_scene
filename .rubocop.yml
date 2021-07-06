@@ -3,6 +3,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'target_app/**/*'
+    - 'frontend/**/*'
 
 Style/AccessModifierDeclarations:
   Enabled: false
