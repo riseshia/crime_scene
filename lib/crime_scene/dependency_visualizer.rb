@@ -27,9 +27,33 @@ module CrimeScene
         append_const_location_to_package(packages, const_to_location)
         append_reference_to_package(packages, meta_per_file)
 
+        append_depend_package_names_to_package(packages)
+
+        packages
+      end
+
+      def append_depend_package_names_to_package(packages) # rubocop:disable Metrics/AbcSize
         package_to_external_consts = extract_external_const(packages)
 
-        convert_const_to_package(packages, package_to_external_consts)
+        const_to_package_name = {}
+        packages.each do |package|
+          package.constants.each do |const_name|
+            const_to_package_name[const_name] = package.name
+          end
+        end
+
+        package_to_package = {}
+        package_to_external_consts.each do |package_name, const_names|
+          uniq_set = Set.new
+          const_names.map do |const_name|
+            uniq_set.add(const_to_package_name.fetch(const_name, "UnknownPackage"))
+          end
+          package_to_package[package_name] = uniq_set.to_a.sort
+        end
+
+        packages.each do |package|
+          package.depend_package_names = package_to_package[package.name]
+        end
       end
 
       def convert_const_to_package(packages, package_to_external_consts)

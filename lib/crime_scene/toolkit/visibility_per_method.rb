@@ -78,7 +78,7 @@ module CrimeScene
           pop_scope if struct_def
         end
 
-        private def struct_def?(node) # rubocop:disable Metrics/PerceivedComplexity
+        private def struct_def?(node)
           return false unless node.type == :block
 
           struct_new = node.children.first
@@ -86,11 +86,10 @@ module CrimeScene
           return false unless struct_new&.type == :send
 
           receiver, method_name = struct_new.children
-          if method_name == :new && receiver&.type == :const && receiver.children == [nil, :Struct]
-            true
-          else
-            false
-          end
+
+          method_name == :new && \
+          receiver&.type == :const && \
+          receiver.children == [nil, :Struct]
         end
 
         TARGET_METHOD = %i[public protected private].freeze

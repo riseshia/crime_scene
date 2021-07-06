@@ -5,7 +5,11 @@ require "test_helper"
 module CrimeScene
   class DependencyVisualizerTest < Minitest::Test
     def test_call
-      actual_map = DependencyVisualizer.call("target_app/packages.yml")
+      packages = DependencyVisualizer.call("target_app/packages.yml")
+      actual_map = packages.each_with_object({}) do |package, obj|
+        obj[package.name] = package.depend_package_names
+      end
+
       expected_map = {
         "TargetApp" => ["UnknownPackage"],
         "Top" => %w[Post TargetApp],
