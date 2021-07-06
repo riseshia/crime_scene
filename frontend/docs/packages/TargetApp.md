@@ -4,7 +4,7 @@
 
 - [UnknownPackage](UnknownPackage.md)
 
-## Dependented by
+## Depended by
 
 - [Comment](Comment.md)
 - [Post](Post.md)

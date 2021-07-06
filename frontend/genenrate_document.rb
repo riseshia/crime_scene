@@ -1,10 +1,11 @@
 require "json"
 require "set"
+require "fileutils"
 
 packages_json_path = ARGV[0]
 
 def format_filename(string)
-  string.gsub("::", "__") + ".md"
+  string.gsub("/", "-").gsub("::", "/") + ".md"
 end
 
 PackageData = Struct.new(:name, :include_paths, :recursive_include, :files, :references, :constants, :external_references, :depend_package_names)
@@ -40,9 +41,7 @@ slug: /
 MARKDOWN
 
 File.write("docs/index.md", md)
-unless File.exist?("docs/packages")
-  Dir.mkdir("docs/packages")
-end
+FileUtils.mkdir_p("docs/packages")
 
 packages.each do |package|
   filename = format_filename(package.name)
@@ -75,5 +74,9 @@ packages.each do |package|
 
   MARKDOWN
 
+  target_dir = File.dirname(filename)
+  unless Dir.exist?(target_dir)
+    FileUtils.mkdir_p(target_dir)
+  end
   File.write("docs/packages/#{filename}", md)
 end

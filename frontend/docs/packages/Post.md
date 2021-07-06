@@ -6,7 +6,7 @@
 - [TargetApp](TargetApp.md)
 - [User](User.md)
 
-## Dependented by
+## Depended by
 
 - [Comment](Comment.md)
 - [Top](Top.md)

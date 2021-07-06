@@ -32,13 +32,13 @@ module CrimeScene
     def export
       {
         name: @name,
-        include_paths: @include_paths,
+        include_paths: @include_paths.to_a.sort,
         recursive_include: @recursive_include,
-        files: @files,
-        references: @references,
-        constants: @constants,
-        external_references: external_references,
-        depend_package_names: @depend_package_names
+        files: @files.to_a.sort,
+        references: @references.to_a.sort,
+        constants: @constants.to_a.sort,
+        external_references: external_references.to_a.sort,
+        depend_package_names: @depend_package_names.to_a.sort
       }
     end
 

@@ -5,7 +5,7 @@
 - [Post](Post.md)
 - [TargetApp](TargetApp.md)
 
-## Dependented by
+## Depended by
 
 This package isn't depended by any package.
 
