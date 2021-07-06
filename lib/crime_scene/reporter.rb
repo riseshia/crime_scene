@@ -28,7 +28,7 @@ module CrimeScene
           nodes = pkg.depend_package_names.map { |n| %("#{n}") }.join(" ")
           %(  "#{pkg.name}" -> { #{nodes} };)
         end
-        data
+
         <<~DOT
           digraph dependency_gragh {
           #{lines.join("\n")
