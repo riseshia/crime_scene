@@ -6,11 +6,14 @@ module CrimeScene
   # Detemine source location of constant
   module ConstantLocationGuessor
     class << self
-      def call(const_name, candidates)
+      def call(const_name, candidates, known_constants)
         const_chains = const_name.split("::")
 
         loop do
           try = const_chains.join("::")
+
+          return known_constants[try] if known_constants[try]
+
           path_suffix_candidate = ConstantPathResolver.resolve(try)
 
           target_path = candidates.find { |path| path.end_with?(path_suffix_candidate) }

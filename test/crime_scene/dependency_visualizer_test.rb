@@ -11,10 +11,11 @@ module CrimeScene
       end
 
       expected_map = {
-        "TargetApp" => ["UnknownPackage"],
+        "TargetApp" => %w[UnknownExternalPackage],
+        "Lib" => %w[UnknownExternalPackage],
         "Top" => %w[Post TargetApp],
         "User" => %w[Comment Post TargetApp],
-        "Post" => %w[Comment TargetApp User],
+        "Post" => %w[Comment Lib TargetApp User],
         "Comment" => %w[Post TargetApp User]
       }
 

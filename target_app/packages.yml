@@ -1,29 +1,42 @@
-- name: TargetApp
-  include_paths:
-    - app/controllers/application_controller.rb
-    - app/helpers/application_helper.rb
-    - app/views/layouts/application.html.erb
-    - app/models/application_record.rb
-- name: Top
-  include_paths:
-    - app/controllers/top_controller.rb
-    - app/views/top/
-    - app/helpers/top_helper.rb
-- name: User
-  include_paths:
-    - app/controllers/users_controller.rb
-    - app/views/users/
-    - app/helpers/users_helper.rb
-    - app/models/user.rb
-- name: Post
-  include_paths:
-    - app/controllers/posts_controller.rb
-    - app/views/posts/
-    - app/helpers/posts_helper.rb
-    - app/models/post.rb
-- name: Comment
-  include_paths:
-    - app/controllers/comments_controller.rb
-    - app/views/comments/
-    - app/helpers/comments_helper.rb
-    - app/models/comment.rb
+config:
+  target_paths:
+    - app/controllers/
+    - app/helpers/
+    - app/models/
+    - app/views/
+    - lib/
+  known_constants:
+    Exception: lib/exceptions.rb
+packages:
+  - name: TargetApp
+    include_paths:
+      - app/controllers/application_controller.rb
+      - app/helpers/application_helper.rb
+      - app/views/layouts/application.html.erb
+      - app/models/application_record.rb
+  - name: Lib
+    include_paths:
+      - lib/
+  - name: Top
+    include_paths:
+      - app/controllers/top_controller.rb
+      - app/views/top/
+      - app/helpers/top_helper.rb
+  - name: User
+    include_paths:
+      - app/controllers/users_controller.rb
+      - app/views/users/
+      - app/helpers/users_helper.rb
+      - app/models/user.rb
+  - name: Post
+    include_paths:
+      - app/controllers/posts_controller.rb
+      - app/views/posts/
+      - app/helpers/posts_helper.rb
+      - app/models/post.rb
+  - name: Comment
+    include_paths:
+      - app/controllers/comments_controller.rb
+      - app/views/comments/
+      - app/helpers/comments_helper.rb
+      - app/models/comment.rb

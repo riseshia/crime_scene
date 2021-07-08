@@ -5,15 +5,22 @@ require "yaml"
 module CrimeScene
   # Entrypoint of Dependency calculation.
   module DependencyVisualizer # rubocop:disable Metrics/ModuleLength
+    DependencyVisualizerConfig = Struct.new(:target_paths, :known_constants, keyword_init: true)
     class << self
       # @return [Hash<String, Array<String>>] { package_name => [package_name] }
-      def call(packages_config_path)
-        packages_config = YAML.safe_load(
+      def call(packages_config_path) # rubocop:disable Metrics/AbcSize
+        yaml = YAML.safe_load(
           File.read(packages_config_path),
           permitted_classes: [Symbol],
           symbolize_names: true
         )
         path_to_config_file = File.dirname(packages_config_path)
+
+        dv_config = DependencyVisualizerConfig.new(
+          target_paths: yaml[:config][:target_paths],
+          known_constants: yaml[:config][:known_constants].transform_keys(&:to_s)
+        )
+        packages_config = yaml[:packages]
 
         packages = nil
         meta_per_file = nil
@@ -23,7 +30,7 @@ module CrimeScene
           meta_per_file = process_asts(all_files)
         end
 
-        const_to_location = find_out_const_location(meta_per_file)
+        const_to_location = find_out_const_location(meta_per_file, dv_config)
         append_const_location_to_package(packages, const_to_location)
         append_reference_to_package(packages, meta_per_file)
 
@@ -32,24 +39,10 @@ module CrimeScene
         packages
       end
 
-      def append_depend_package_names_to_package(packages) # rubocop:disable Metrics/AbcSize
+      def append_depend_package_names_to_package(packages)
         package_to_external_consts = extract_external_const(packages)
 
-        const_to_package_name = {}
-        packages.each do |package|
-          package.constants.each do |const_name|
-            const_to_package_name[const_name] = package.name
-          end
-        end
-
-        package_to_package = {}
-        package_to_external_consts.each do |package_name, const_names|
-          uniq_set = Set.new
-          const_names.map do |const_name|
-            uniq_set.add(const_to_package_name.fetch(const_name, "UnknownPackage"))
-          end
-          package_to_package[package_name] = uniq_set.to_a.sort
-        end
+        package_to_package = convert_const_to_package(packages, package_to_external_consts)
 
         packages.each do |package|
           package.depend_package_names = package_to_package[package.name]
@@ -68,7 +61,7 @@ module CrimeScene
         package_to_external_consts.each do |package_name, const_names|
           uniq_set = Set.new
           const_names.map do |const_name|
-            uniq_set.add(const_to_package_name.fetch(const_name, "UnknownPackage"))
+            uniq_set.add(const_to_package_name.fetch(const_name, "UnknownExternalPackage"))
           end
           package_to_package[package_name] = uniq_set.to_a.sort
         end
@@ -81,7 +74,7 @@ module CrimeScene
         end
       end
 
-      def find_out_const_location(meta_per_file)
+      def find_out_const_location(meta_per_file, dv_config)
         const_to_location_candidates = {}
 
         meta_per_file.each do |file, analyzed_result|
@@ -93,7 +86,7 @@ module CrimeScene
 
         const_to_location = {}
         const_to_location_candidates.each do |const_name, candidates|
-          path = ConstantLocationGuessor.call(const_name, candidates)
+          path = ConstantLocationGuessor.call(const_name, candidates, dv_config.known_constants)
           const_to_location[const_name] = path if path
         end
         const_to_location

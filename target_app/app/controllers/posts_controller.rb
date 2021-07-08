@@ -8,6 +8,7 @@ class PostsController < ApplicationController
 
   # GET /posts/1
   def show
+    raise Exception::NotFound if params[:id] == '0'
   end
 
   # GET /posts/new
