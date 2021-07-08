@@ -5,20 +5,20 @@ require "set"
 
 module CrimeScene
   # Find out concrete file path of package
-  module PackageFilepathScanner
+  module FilepathScanner
     ALLOWED_EXTS = %w[.rb .erb .haml].freeze
 
-    module_function def call(package)
+    module_function def call(target_paths, recursive_scan: false)
       matched = Set.new
 
-      package.include_paths.each do |include_path|
+      target_paths.each do |include_path|
         Find.find(include_path) do |target_path|
           next if File.directory?(target_path)
           next unless ALLOWED_EXTS.include?(File.extname(target_path))
 
-          # Don't match file in sud-dir when recursive_include is false
+          # Don't match file in sud-dir when recursive_scan is false
           rel_path = target_path[include_path.size..]
-          next if !package.recursive_include && rel_path.include?("/")
+          next if !recursive_scan && rel_path.include?("/")
 
           matched << target_path
         end

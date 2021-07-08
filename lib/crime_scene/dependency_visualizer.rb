@@ -25,9 +25,21 @@ module CrimeScene
         packages = nil
         meta_per_file = nil
         Dir.chdir(path_to_config_file) do
+          target_files = FilepathScanner.call(
+            dv_config.target_paths,
+            recursive_scan: true
+          )
           packages = load_packages(packages_config)
-          all_files = aggregation_filepaths_from_package(packages)
-          meta_per_file = process_asts(all_files)
+          all_files_in_package = aggregation_filepaths_from_package(packages)
+          if target_files != all_files_in_package
+            warn "Some files are not in package:"
+            (target_files - all_files_in_package).each do |file|
+              warn "- #{file}"
+            end
+            exit 1
+          end
+
+          meta_per_file = process_asts(all_files_in_package)
         end
 
         const_to_location = find_out_const_location(meta_per_file, dv_config)

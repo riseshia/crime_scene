@@ -12,7 +12,7 @@ packages:
     include_paths:
       - app/controllers/application_controller.rb
       - app/helpers/application_helper.rb
-      - app/views/layouts/application.html.erb
+      - app/views/layouts/
       - app/models/application_record.rb
   - name: Lib
     include_paths:

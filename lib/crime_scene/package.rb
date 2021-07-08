@@ -59,7 +59,10 @@ module CrimeScene
     # Expand include_path to actual path with recursive_include
     # If recursive_include is true, files in sub-dir would be included.
     def load_file_path!
-      @files = PackageFilepathScanner.call(self)
+      @files = FilepathScanner.call(
+        include_paths,
+        recursive_scan: recursive_include
+      )
     end
   end
 end
