@@ -7,7 +7,7 @@ module CrimeScene
   # Package is the concept to aggregate files.
   # This is the unit of calculating dependencies.
   class Package
-    attr_reader :name, :include_paths, :recursive_include, :files, :references, :constants
+    attr_reader :name, :include_paths, :exclude_path_regexps, :recursive_include, :files, :references, :constants
     attr_accessor :depend_package_names
 
     # @option name [String]
@@ -16,10 +16,12 @@ module CrimeScene
     def initialize(
       name:,
       include_paths:,
+      exclude_paths:,
       recursive_include:
     )
       @name = name
       @include_paths = Set.new(include_paths)
+      @exclude_path_regexps = Regexp.union(exclude_paths)
       @recursive_include = recursive_include
 
       # This will be injected.
@@ -61,6 +63,7 @@ module CrimeScene
     def load_file_path!
       @files = FilepathScanner.call(
         include_paths,
+        exclude_path_regexps,
         recursive_scan: recursive_include
       )
     end

@@ -5,31 +5,38 @@ require "yaml"
 module CrimeScene
   # Entrypoint of Dependency calculation.
   module DependencyVisualizer # rubocop:disable Metrics/ModuleLength
-    DependencyVisualizerConfig = Struct.new(:target_paths, :known_constants, keyword_init: true)
+    DependencyVisualizerConfig = Struct.new(
+      :target_paths,
+      :exclude_paths,
+      :known_constants,
+      keyword_init: true
+    )
     class << self
       # @return [Hash<String, Array<String>>] { package_name => [package_name] }
       def call(packages_config_path) # rubocop:disable Metrics/AbcSize
         yaml = YAML.safe_load(
           File.read(packages_config_path),
-          permitted_classes: [Symbol],
           symbolize_names: true
         )
         path_to_config_file = File.dirname(packages_config_path)
 
         dv_config = DependencyVisualizerConfig.new(
           target_paths: yaml[:config][:target_paths],
+          exclude_paths: yaml[:config].fetch(:exclude_paths, []),
           known_constants: yaml[:config][:known_constants].transform_keys(&:to_s)
         )
         packages_config = yaml[:packages]
 
         packages = nil
         meta_per_file = nil
+        exclude_path_regexps = Regexp.union(dv_config.exclude_paths)
         Dir.chdir(path_to_config_file) do
           target_files = FilepathScanner.call(
             dv_config.target_paths,
+            exclude_path_regexps,
             recursive_scan: true
           )
-          packages = load_packages(packages_config)
+          packages = load_packages(packages_config, dv_config)
           all_files_in_package = aggregation_filepaths_from_package(packages)
           if target_files != all_files_in_package
             warn "Some files are not in package:"
@@ -148,9 +155,9 @@ module CrimeScene
       #     - lib/a.rb
       #
       # @return [Array<CrimeScene::Package>]
-      def load_packages(packages_config)
+      def load_packages(packages_config, dv_config)
         packages_config.map do |package_config|
-          PackageConfig.new(package_config).build_package.tap(&:load_file_path!)
+          PackageConfig.new(package_config, dv_config).build_package.tap(&:load_file_path!)
         end
       end
 
