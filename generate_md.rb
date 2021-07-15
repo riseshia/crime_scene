@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "json"
 require "set"
 require "fileutils"
@@ -5,11 +7,19 @@ require "fileutils"
 packages_json_path = ARGV[0]
 
 def format_filename(string)
-  string
-  string.gsub("/", "-").gsub("::", "/") + ".md"
+  "#{string.gsub("/", "-").gsub("::", "/")}.md"
 end
 
-PackageData = Struct.new(:name, :include_paths, :recursive_include, :files, :references, :constants, :external_references, :depend_package_names)
+PackageData = Struct.new(
+  :name,
+  :include_paths,
+  :recursive_include,
+  :files,
+  :references,
+  :constants,
+  :external_references,
+  :depend_package_names
+)
 
 packages = JSON.parse(File.read(packages_json_path)).map do |row|
   PackageData.new(*row.values)
@@ -23,31 +33,32 @@ dependent = packages.each_with_object({}) do |package, obj|
 end
 dependent_package_names = dependent.transform_values { |v| v.to_a.sort }
 
-top_100 = packages.sort_by { |pkg| -pkg.depend_package_names.size }.take(100). \
-  map { |pkg| "- [#{pkg.name}](packages/#{format_filename(pkg.name)}) with #{pkg.depend_package_names.size} dependencies" }.join("\n")
+top100 = packages
+         .sort_by { |pkg| -pkg.depend_package_names.size }.take(100)
+         .map { |pkg| "- [#{pkg.name}](packages/#{format_filename(pkg.name)}) with #{pkg.depend_package_names.size} dependencies" }.join("\n") # rubocop:disable Layout/LineLength
 
 md = <<~MARKDOWN
----
-id: introduction
-title: Introduction
-slug: /
----
-# Packages
-## Top 100 packages by the num of depend package
-#{ top_100 }
+  ---
+  id: introduction
+  title: Introduction
+  slug: /
+  ---
+  # Packages
+  ## Top 100 packages by the num of depend package
+  #{top100}
 MARKDOWN
 
 File.write("docs/index.md", md)
 FileUtils.mkdir_p("docs/packages")
 
 md = <<~MARKDOWN
-# UnknownPackage
+  # UnknownPackage
 
-Constant which declaration not found in project is classified to UnknownPackage.
-For instance,
+  Constant which declaration not found in project is classified to UnknownPackage.
+  For instance,
 
-- Constant definition located in either non-zeitwerk rule or not specified with knowned_constants.
-- Library constant which opened for monky patching in project.
+  - Constant definition located in either non-zeitwerk rule or not specified with knowned_constants.
+  - Library constant which opened for monky patching in project.
 MARKDOWN
 File.write("docs/packages/UnknownPackage.md", md)
 
@@ -66,18 +77,16 @@ packages.each do |package|
   end
 
   md = <<~MARKDOWN
-  # #{package.name}
-  ## Depend to
-  #{ depend_packages }
-  ## Depended by
-  #{ dependent_packages ? dependent_packages : "This package isn't depended by any package." }
-  ## Included files
-  #{ files }
+    # #{package.name}
+    ## Depend to
+    #{depend_packages}
+    ## Depended by
+    #{dependent_packages || "This package isn't depended by any package."}
+    ## Included files
+    #{files}
   MARKDOWN
 
   target_dir = "docs/packages/#{File.dirname(filename)}"
-  unless Dir.exist?(target_dir)
-    FileUtils.mkdir_p(target_dir)
-  end
+  FileUtils.mkdir_p(target_dir) unless Dir.exist?(target_dir)
   File.write("docs/packages/#{filename}", md)
 end
