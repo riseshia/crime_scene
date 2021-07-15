@@ -34,7 +34,7 @@ module CrimeScene
 
         source_code = Haml::Engine.new(source_code).precompiled
         result = analyze_ruby(identifier, source_code)
-        called_methods = result[:called_methods][""]
+        called_methods = result[:called_methods].fetch("", [])
         called_methods_from_haml = %w[_hamlout]
 
         Result.new(
@@ -75,7 +75,7 @@ module CrimeScene
 
         Result.new(
           path: path,
-          called_methods: { path => result[:called_methods][""] }
+          called_methods: { path => result[:called_methods].fetch("", []) }
         )
       end
 
