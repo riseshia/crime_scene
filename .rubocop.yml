@@ -3,6 +3,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - 'target_app/**/*'
+    - 'lib/crime_scene/render_tracer/ast_processor.rb'
 
 Style/AccessModifierDeclarations:
   Enabled: false
