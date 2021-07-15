@@ -18,6 +18,7 @@ module CrimeScene
       target_paths.each do |include_path|
         Find.find(include_path) do |target_path|
           next if File.directory?(target_path)
+          next if File.symlink?(target_path)
           next unless ALLOWED_EXTS.include?(File.extname(target_path))
           next if exclude_path_regexps && exclude_path_regexps.match?(target_path)
 
