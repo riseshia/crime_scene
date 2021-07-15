@@ -42,6 +42,18 @@ module CrimeScene
           if arg.type == :str
             add_partial_view(arg.children.first)
           end
+          if arg.type == :dstr
+            name = "dstr:#{arg.location.expression.source[1..-2]}"
+            add_partial_view(name)
+          end
+          if arg.type == :ivar
+            name = "ivar:#{arg.location.expression.source}"
+            add_partial_view(name)
+          end
+          if arg.type == :send
+            name = "send:#{arg.location.expression.source}"
+            add_partial_view(name)
+          end
 
           next unless arg.type == :hash
 

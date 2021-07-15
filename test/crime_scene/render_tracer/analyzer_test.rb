@@ -21,12 +21,19 @@ module CrimeScene
               render "simple"
               render partial: "partial_view1", layout: "layout1"
               render "shared/view", layout: false
+              render "shared/\#{somevar}"
+              render somevar
+              render @somevar
             end
           end
         TEST_CODE
 
         result = Analyzer.analyze_ruby(path, source_code)
-        assert_equal %w[simple partial_view1 shared/view], result.partial_views
+        assert_equal %W[
+          simple partial_view1 shared/view
+          dstr:shared/\#{somevar}
+          send:somevar ivar:@somevar
+        ], result.partial_views
         assert_equal %w[layout1], result.layouts
       end
 
