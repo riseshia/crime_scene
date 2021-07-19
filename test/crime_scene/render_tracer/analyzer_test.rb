@@ -20,6 +20,7 @@ module CrimeScene
           module UsersHelper
             def page_render(user)
               render "simple"
+              render :simple_sym
               render partial: "partial_view1", layout: "layout1"
               render "shared/view", layout: false
               render "shared/\#{somevar}"
@@ -32,7 +33,9 @@ module CrimeScene
 
         result = Analyzer.analyze_ruby(path, source_code)
         assert_equal %W[
-          simple shared/view
+          simple
+          simple_sym
+          shared/view
           dstr:shared/\#{somevar}
           send:somevar ivar:@somevar
         ], result.normal_views

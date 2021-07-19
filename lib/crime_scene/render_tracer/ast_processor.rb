@@ -39,7 +39,7 @@ module CrimeScene
         node.children.each { |n| process(n) if n.is_a? Parser::AST::Node }
       end
 
-      RECORD_TYPE = %i[str dstr ivar send]
+      RECORD_TYPE = %i[sym str dstr ivar send]
       def record_render(node)
         args = node.children[2..]
         return if args.empty?
@@ -74,6 +74,8 @@ module CrimeScene
         case node.type
         when :str
           node.children.first
+        when :sym
+          node.children.first.to_s
         when :dstr
           "dstr:#{node.location.expression.source[1..-2]}"
         when :ivar
