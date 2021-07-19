@@ -94,6 +94,35 @@ module CrimeScene
         assert_equal %w[partial], result.partial_views
         assert_equal %w[special_layout], result.layouts
       end
+
+      def test_extract_render_to_string
+        path = "users_helper.rb"
+        source_code = <<~TEST_CODE
+          module UsersHelper
+            def page_render(user)
+              render_to_string "simple"
+              render_to_string :simple_sym
+              render_to_string partial: "partial_view1", layout: "layout1"
+              render_to_string "shared/view", layout: false
+              render_to_string "shared/\#{somevar}"
+              render_to_string somevar
+              render_to_string @somevar
+              render_to_string partial: @var_for_partial, layout: @var_for_layout
+            end
+          end
+        TEST_CODE
+
+        result = Analyzer.analyze_ruby(path, source_code)
+        assert_equal %W[
+          simple
+          simple_sym
+          shared/view
+          dstr:shared/\#{somevar}
+          send:somevar ivar:@somevar
+        ], result.normal_views
+        assert_equal %w[partial_view1 ivar:@var_for_partial], result.partial_views
+        assert_equal %w[layout1 ivar:@var_for_layout], result.layouts
+      end
     end
   end
 end

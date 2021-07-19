@@ -30,10 +30,11 @@ module CrimeScene
         nil
       end
 
+      RECORD_METHOD_TARGETS = %i[render render_to_string]
       def on_send(node)
         receiver, method_name, _target = node.children
 
-        if receiver.nil? && method_name == :render
+        if receiver.nil? && RECORD_METHOD_TARGETS.include?(method_name)
           record_render(node)
         end
         node.children.each { |n| process(n) if n.is_a? Parser::AST::Node }
