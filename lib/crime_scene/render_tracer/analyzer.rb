@@ -9,7 +9,7 @@ module CrimeScene
     module Analyzer # rubocop:disable Style/Documentation
       class UnsupportedFormatError < StandardError; end
 
-      Result = Struct.new(:path, :partial_views, :layouts, keyword_init: true)
+      Result = Struct.new(:path, :partial_views, :normal_views, :layouts, keyword_init: true)
 
       module_function
 
@@ -23,6 +23,7 @@ module CrimeScene
         Result.new(
           path: path,
           partial_views: res[:partial_views],
+          normal_views: res[:normal_views],
           layouts: res[:layouts]
         )
       rescue Parser::SyntaxError
@@ -39,6 +40,7 @@ module CrimeScene
         Result.new(
           path: path,
           partial_views: res[:partial_views],
+          normal_views: res[:normal_views],
           layouts: res[:layouts]
         )
       end
@@ -76,6 +78,7 @@ module CrimeScene
         Result.new(
           path: path,
           partial_views: res[:partial_views],
+          normal_views: res[:normal_views],
           layouts: res[:layouts]
         )
       end

@@ -9,6 +9,7 @@ module CrimeScene
         path = "users_helper.rb"
         source_code = ""
         result = Analyzer.analyze_ruby(path, source_code)
+        assert_equal [], result.normal_views
         assert_equal [], result.partial_views
         assert_equal [], result.layouts
       end
@@ -24,17 +25,19 @@ module CrimeScene
               render "shared/\#{somevar}"
               render somevar
               render @somevar
+              render partial: @var_for_partial, layout: @var_for_layout
             end
           end
         TEST_CODE
 
         result = Analyzer.analyze_ruby(path, source_code)
         assert_equal %W[
-          simple partial_view1 shared/view
+          simple shared/view
           dstr:shared/\#{somevar}
           send:somevar ivar:@somevar
-        ], result.partial_views
-        assert_equal %w[layout1], result.layouts
+        ], result.normal_views
+        assert_equal %w[partial_view1 ivar:@var_for_partial], result.partial_views
+        assert_equal %w[layout1 ivar:@var_for_layout], result.layouts
       end
 
       def test_analyze_erb
@@ -46,7 +49,7 @@ module CrimeScene
           - <%= user_name(user.name) %>
           - <%= render 'simple', user: user %>
           - <%= render 'shared/user', user: user %>
-          - <%= render 'partial',
+          - <%= render partial: 'partial',
                         user: user, layout: 'special_layout' %>
           <% end %>
           <% post = Post.last %>
@@ -58,7 +61,8 @@ module CrimeScene
         TEST_CODE
 
         result = Analyzer.analyze_erb(path, source_code)
-        assert_equal %w[simple shared/user partial], result.partial_views
+        assert_equal %w[simple shared/user], result.normal_views
+        assert_equal %w[partial], result.partial_views
         assert_equal %w[special_layout], result.layouts
       end
 
@@ -72,7 +76,7 @@ module CrimeScene
             = link_to 'Show', user
             = render 'simple', user: user
             = render 'shared/user', user: user
-            = render 'partial',
+            = render partial: 'partial',
                      user: user, layout: 'special_layout'
           - post = Post.last
           = link_to 'Newest post', post
@@ -83,7 +87,8 @@ module CrimeScene
         TEST_CODE
 
         result = Analyzer.analyze_haml(path, source_code)
-        assert_equal %w[simple shared/user partial], result.partial_views
+        assert_equal %w[simple shared/user], result.normal_views
+        assert_equal %w[partial], result.partial_views
         assert_equal %w[special_layout], result.layouts
       end
     end
