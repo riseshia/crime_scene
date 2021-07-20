@@ -28,6 +28,7 @@ module CrimeScene
         merged << {
           path: result.path,
           partial_views: result.partial_views,
+          normal_views: result.normal_views,
           layouts: result.layouts
         }
       end
