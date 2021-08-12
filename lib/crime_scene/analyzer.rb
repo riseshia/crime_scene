@@ -34,7 +34,7 @@ module CrimeScene
       source_code = Haml::Engine.new(source_code).precompiled
       result = analyze_ruby(identifier, source_code)
 
-      used_by_haml_compiler = ["Hash", "Array", "Haml::Helpers"]
+      used_by_haml_compiler = ["Hash", "Array", "Haml::Helpers", "Haml::AttributeBuilder"]
 
       collected_references =
         if result.collected_references.empty?
