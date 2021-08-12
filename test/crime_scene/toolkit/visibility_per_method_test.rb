@@ -24,6 +24,12 @@ module CrimeScene
               user.name
             end
           end
+
+          describe do
+            def not_in_class
+              'yes'
+            end
+          end
         TEST_CODE
 
         actual_code = VisibilityPerMethod.process(source_code)

@@ -123,6 +123,7 @@ module CrimeScene
         def on_def(node)
           method_visibility = try_retrieve_method_visibility_from_next_line(node) || current_visibility
           return if method_visibility == :public
+          return if method_visibility.nil?
 
           insert_before(node.location.expression.begin, "#{method_visibility} ")
         end
