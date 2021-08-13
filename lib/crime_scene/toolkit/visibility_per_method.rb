@@ -131,10 +131,11 @@ module CrimeScene
         private def try_retrieve_method_visibility_from_next_line(node)
           end_lineno = node.location.end.line
           next_line = fetch_next_line_from_buffer(end_lineno).strip
+          method_name = node.children.first
 
-          if next_line.start_with?("private :") then :private
-          elsif next_line.start_with?("protected :") then :protected
-          elsif next_line.start_with?("public :") then :public
+          if next_line.start_with?("private :#{method_name}") then :private
+          elsif next_line.start_with?("protected :#{method_name}") then :protected
+          elsif next_line.start_with?("public :#{method_name}") then :public
           end
         end
 
