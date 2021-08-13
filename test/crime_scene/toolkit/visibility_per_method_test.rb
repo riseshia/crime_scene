@@ -181,7 +181,7 @@ module CrimeScene
             def public_name(user)
               user.name
             end
-            public :private_name
+            public :public_name
           end
         TEST_CODE
 
